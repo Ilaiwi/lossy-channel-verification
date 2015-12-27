@@ -61,6 +61,18 @@ class SystemState :
                 matchedConfs[self.strProcesses(i)]=[i];
         return matchedConfs
     
+    #helper function to return the biggest confs
+    def biggestChannel(self,conf):
+        
+        for i in conf:
+            
+        return []
+    
+    #helper function to find gama for only one config
+    def gamaConf(self,k,conf):
+        
+        return []
+    
     def gama(self, k , confs):
         matchedConfs=self.divideConfs(confs)
         for i in matchedConfs.values():
