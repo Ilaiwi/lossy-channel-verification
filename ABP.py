@@ -5,28 +5,32 @@ class Process :
         self.ID = ID 
         self.state = state
 class Channel : 
-    def __init__(self):
-        self.data = ""  # string contains the data in the channel . 
-        self.processes = [] # list contains ID of processes that can access the channel .// maybe we will use dictionary instead of list  
+    def __init__(self,data=""):
+        self.data = data  # string contains the data in the channel . 
+        self.processes = [] # list contains ID of processes that can access the channel .// maybe we will use dictionary instead of list
+    def subWords(self,length=None) :
+        subWordList =[]
+        data = self.data
+        channelLength = len(data)
+        if length== None : length=channelLength
+        for i in range(1,length+1):
+            for j in range(0,channelLength-i+1):
+                subWordList.append(data[j:j+i])
+        return subWordList  
 class SystemState : 
     def __init__(self,controlState,channels):
         self.controlState = controlState # list of processes // maybe we will use dictionary instead of list 
         self.channels = channels #list contain all channels in the system // maybe we will use dictionary instead of list  
        # self.badStates = [] #list of  string to identify the bad states
+
         
     def alpha(self, k):
         views = [] 
-        sub =[[]]  
-        for c in range(0,len(self.channels)):
-            sub.append([])
-            for i in range(1,k+1):
-                j=0
-                while j+i <= len(self.channels[c]) :
-                    sub[c].append(self.channels[c][j:j+i])
-                    j+=1
-        for i in range(len(sub[0])):
-            for j in range(len(sub[1])):
-                view = SystemState(self.controlState,[sub[0][i],sub[1][j]]) 
+        subWordList1 = self.channels[0].subWords(k)
+        subWordList2 = self.channels[1].subWords(k)
+        for i in range(len(subWordList1)):
+            for j in range(len(subWordList2)):
+                view = SystemState(self.controlState,[subWordList1[i],subWordList2[j]]) 
                 if view not in views :
                     views.append(view)
         
@@ -65,7 +69,7 @@ class SystemState :
     def biggestChannel(self,conf):
         
         for i in conf:
-            
+        	pass   
         return []
     
     #helper function to find gama for only one config
@@ -76,7 +80,7 @@ class SystemState :
     def gama(self, k , confs):
         matchedConfs=self.divideConfs(confs)
         for i in matchedConfs.values():
-            i
+        	pass 
         return []
     
                 
@@ -91,10 +95,9 @@ class SystemState :
         if self.controlState==other.controlState and self.channels==other.channels :
             return True 
 
-        
-init = SystemState([1,2],["110","111"]) 
-L = init.alpha(3)
-for i in range(len(L)):
-    print(L[i]) 
-    #automata 
-    
+        return False
+test = SystemState([1,1],[Channel("abcghghkjliuh"),Channel("defhkjhlkj")])
+l  = test.alpha(15)
+for i in xrange(0,len(l)):
+	print str(i) + " => "+str(l[i])
+print str(len(l))
