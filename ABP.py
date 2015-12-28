@@ -1,12 +1,15 @@
 
 
 class Process : 
-    def __init__(self,ID,state):
+    def __init__(self,ID,state=0):
         self.ID = ID 
         self.state = state
+    def __str__(self):
+        return str(self.state)
 class Channel : 
-    def __init__(self,data=""):
-        self.data = data  # string contains the data in the channel . 
+    def __init__(self,data="",alphabet=[1,0]):
+        self.data = data  # string contains the data in the channel .
+        self.alphabet=[] # list of alphabet allowed in the channels
         self.processes = [] # list contains ID of processes that can access the channel .// maybe we will use dictionary instead of list
     def subWords(self,length=None) :
         subWordList =[]
@@ -16,7 +19,9 @@ class Channel :
         for i in range(1,length+1):
             for j in range(0,channelLength-i+1):
                 subWordList.append(data[j:j+i])
-        return subWordList  
+        return subWordList
+    def __str__(self):
+        return self.data  
 class SystemState : 
     def __init__(self,controlState,channels):
         self.controlState = controlState # list of processes // maybe we will use dictionary instead of list 
@@ -30,7 +35,7 @@ class SystemState :
         subWordList2 = self.channels[1].subWords(k)
         for i in range(len(subWordList1)):
             for j in range(len(subWordList2)):
-                view = SystemState(self.controlState,[subWordList1[i],subWordList2[j]]) 
+                view = SystemState(self.controlState,[Channel(subWordList1[i]),Channel(subWordList2[j])]) 
                 if view not in views :
                     views.append(view)
         
@@ -42,17 +47,22 @@ class SystemState :
         return [];  # return the sub views of the system
     
     def __str__( self ):
-        
-        return '<'+str(self.controlState)+','+str(self.channels)+'>';
+        tempProc=""
+        for i in self.controlState:
+            tempProc=tempProc+str(i)+','
+        tempData=""
+        for i in self.channels:
+            tempData=tempData+'['+str(i)+'],'
+        return '<'+tempProc+tempData+'>';
     
-    
+   
     
     
     #help function for divideConfs
     def strProcesses(self,conf):
         temp=""
         for i in conf.controlState:
-            temp.append(str(i))
+            temp.append(str(i.state))
         return temp
     
     #helper function for gama
@@ -96,8 +106,8 @@ class SystemState :
             return True 
 
         return False
-test = SystemState([1,1],[Channel("abcghghkjliuh"),Channel("defhkjhlkj")])
-l  = test.alpha(15)
+test = SystemState([Process(1,1),Process(2,1)],[Channel("110"),Channel("111")])
+l  = test.alpha(2)
 for i in xrange(0,len(l)):
 	print str(i) + " => "+str(l[i])
 print str(len(l))
