@@ -62,17 +62,19 @@ class SystemState :
     def strProcesses(self,conf):
         temp=""
         for i in conf.controlState:
-            temp.append(str(i.state))
+            temp=temp+str(i.state)
         return temp
     
     #helper function for gama
     def divideConfs(self,confs):
         matchedConfs={}
+        
         for i in confs:
-            if self.strProcesses(i) in matchedConfs.keys():
-                matchedConfs[self.strProcesses(i)].append(i);
+            key=self.strProcesses(i)
+            if key in matchedConfs:
+                matchedConfs[key].append(i);
             else:
-                matchedConfs[self.strProcesses(i)]=[i];
+                matchedConfs[key]=[i];
         return matchedConfs
     
     #helper function to return the biggest confs
@@ -81,16 +83,25 @@ class SystemState :
         for i in conf:
         	pass   
         return []
+    #helper extract channel data from all confs
+    def extractData(self,i,confs):
+        tempData=[]
+        for j in confs:
+            tempData.append(j.channels[i].data)
+        return tempData
     
-    #helper function to find gama for only one config
-    def gamaConf(self,k,conf):
+    #helper function to find gama for only one channel
+    def gamaChannel(self,k,conf):
         
         return []
     
     def gama(self, k , confs):
         matchedConfs=self.divideConfs(confs)
+        gamaResult=[]
         for i in matchedConfs.values():
-        	pass 
+            gamaChannelsResult=[]
+            for j in range(len(i.channels)):
+                gamaChannelsResult.append(self.gamaChannel(k, self.extractData(j, i)))
         return []
     
                 
