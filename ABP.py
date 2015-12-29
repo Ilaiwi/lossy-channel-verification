@@ -22,6 +22,8 @@ class Channel :
         return subWordList
     def __str__(self):
         return self.data  
+    def __lt__(self, other):
+         return self.data < other.data
 class SystemState : 
     def __init__(self,controlState,channels):
         self.controlState = controlState # list of processes // maybe we will use dictionary instead of list 
@@ -87,12 +89,28 @@ class SystemState :
     def extractData(self,i,confs):
         tempData=[]
         for j in confs:
-            tempData.append(j.channels[i].data)
+            tempData.append(j.channels[i])
         return tempData
+    
+    #helper function to return the k gama of a channel data
+    def gamaData(self,k,conf):
+        return []
     
     #helper function to find gama for only one channel
     def gamaChannel(self,k,conf):
-        
+        conf.sort()
+        i=-1
+        if (len(conf[-1].data)==k-1):
+            for j in range(len(conf)):
+                if(len(conf[i].data)==k-1):
+                    i=i-1
+                else:
+                    break
+        gamaChannels=conf[len(conf)+i:len(conf)]
+        for j in gamaChannels:
+            temp=self.gamaData(k, j)
+            for w in temp:
+                w.subWords() in conf
         return []
     
     def gama(self, k , confs):
