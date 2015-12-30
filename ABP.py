@@ -125,130 +125,50 @@ class SystemState :
     def post(self):
     	nextStateList =[]
     	currState = self
-        if currState.controlStateVal() == [1,1] :
-        	# first possible transiton
-        	nextState1 = self.copy()
+    	nextState1,nextState2 = currState.copy(),currState.copy()
+    	sender = currState.controlState[0]
+    	reciever = currState.controlState[1]
+        #second possible transition
+    	if sender.state == 1 or sender.state == 3  : 
+    		nextState1 = self.copy()
         	nextState1.controlState[0].next()
-        	nextStateList.append(nextState1)
-        	#second possible transition
-        	nextState2 = self.copy()
-        	rec = nextState2.channels[0].remove()
+        elif sender.state == 2 : 
+         	nextState1 = self.copy()
+        	rec = nextState1.channels[1].remove()
+        	if rec == "0" : 
+        		nextState1.controlState[0].next()
+        	else :
+        		nextState1.channels[0].append("0")
+        elif sender.state ==4 : 
+			nextState1 = self.copy()
+        	rec = nextState1.channels[1].remove()
+        	if rec == "1" : 
+        		nextState1.controlState[0].next()
+        	else :
+        		nextState1.channels[0].append("1")
+       
+        nextStateList.append(nextState1)
+        # second possible transition
+        if reciever.state == 1 : 
+ 			rec = nextState2.channels[0].remove()
         	if rec == "0" : 
         		nextState2.controlState[1].next()
         	else :
         		nextState2.channels[1].append("1")
-        	nextStateList.append(nextState2)
-        elif currState.controlStateVal() == [2,1]:
-        	# first possible transiton
-         	nextState1 = self.copy()
-        	rec = nextState1.channels[1].remove()
-        	if rec == "0" : 
-        		nextState1.controlState[0].next()
-        	else :
-        		nextState1.channels[0].append("0")
-        	nextStateList.append(nextState1) 
-        	# second possible transition     
-        	nextState2 = self.copy()
-        	rec = nextState2.channels[0].remove()
-        	if rec == "0" : 
-        		nextState2.controlState[1].next()
-        	else :
-        		nextState2.channels[1].append("1")
-        	nextStateList.append(nextState2)
-        elif currState.controlStateVal() == [2,2] : 
-        	# first possible transiton
-         	nextState1 = self.copy()
-        	rec = nextState1.channels[1].remove()
-        	if rec == "0" : 
-        		nextState1.controlState[0].next()
-        	else :
-        		nextState1.channels[0].append("0")
-        	nextStateList.append(nextState1) 
-        	# second possible transition 
+        elif reciever.state == 2 or reciever.state ==4 : 
         	nextState2 = self.copy()
         	nextState2.controlState[1].next()
-        	nextStateList.append(nextState2)
-        elif currState.controlStateVal() == [2,3] :
-        	# first possible transiton
-         	nextState1 = self.copy()
-        	rec = nextState1.channels[1].remove()
-        	if rec == "0" : 
-        		nextState1.controlState[0].next()
-        	else :
-        		nextState1.channels[0].append("0")
-        	nextStateList.append(nextState1) 
-        	# second possible transition     
-        	nextState2 = self.copy()
+        elif reciever.state == 3 :
         	rec = nextState2.channels[0].remove()
         	if rec == "1" : 
         		nextState2.controlState[1].next()
         	else :
-        		nextState2.channels[1].append("0")
-        	nextStateList.append(nextState2)
-        elif currState.controlStateVal() == [3,3] :
-        	# first possible transiton
-        	nextState1 = self.copy()
-        	nextState1.controlState[0].next()
-        	nextStateList.append(nextState1)
-        	# second possible transition     
-        	nextState2 = self.copy()
-        	rec = nextState2.channels[0].remove()
-        	if rec == "1" : 
-        		nextState2.controlState[1].next()
-        	else :
-        		nextState2.channels[1].append("0")
-        	nextStateList.append(nextState2)
-        elif currState.controlStateVal() == [4,3] :
-        	# first possible transiton
-         	nextState1 = self.copy()
-        	rec = nextState1.channels[1].remove()
-        	if rec == "1" : 
-        		nextState1.controlState[0].next()
-        	else :
-        		nextState1.channels[0].append("1")
-        	nextStateList.append(nextState1) 
-        	# second possible transition     
-        	nextState2 = self.copy()
-        	rec = nextState2.channels[0].remove()
-        	if rec == "1" : 
-        		nextState2.controlState[1].next()
-        	else :
-        		nextState2.channels[1].append("0")
-        	nextStateList.append(nextState2)
-        elif currState.controlStateVal() == [4,4] :
-        	# first possible transiton
-         	nextState1 = self.copy()
-        	rec = nextState1.channels[1].remove()
-        	if rec == "1" : 
-        		nextState1.controlState[0].next()
-        	else :
-        		nextState1.channels[0].append("1")
-        	nextStateList.append(nextState1)         	
-        	# second possible transition 
-        	nextState2 = self.copy()
-        	nextState2.controlState[1].next()
-        	nextStateList.append(nextState2)
-        elif currState.controlStateVal() == [4,1] :
-        	# first possible transiton
-         	nextState1 = self.copy()
-        	rec = nextState1.channels[1].remove()
-        	if rec == "1" : 
-        		nextState1.controlState[0].next()
-        	else :
-        		nextState1.channels[0].append("1")
-        	nextStateList.append(nextState1) 
-        	#second possible transition
-        	nextState2 = self.copy()
-        	rec = nextState2.channels[0].remove()
-        	if rec == "0" : 
-        		nextState2.controlState[1].next()
-        	else :
-        		nextState2.channels[1].append(1)
-        	nextStateList.append(nextState2)
+        		nextState2.channels[1].append("0")        		
+
+        nextStateList.append(nextState2)
 
         return nextStateList
 
-        	
        
     
     def Apost(self):
