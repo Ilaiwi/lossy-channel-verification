@@ -1,11 +1,14 @@
 
-
 class Process : 
     def __init__(self,ID,state=0):
         self.ID = ID 
         self.state = state
     def __str__(self):
         return str(self.state)
+    def next(self) : 
+    	self.state = (self.state % 4 ) +1  
+    def copy(self):
+    	return Process(self.ID,self.state)
 class Channel : 
     def __init__(self,data="",alphabet=[1,0]):
         self.data = data  # string contains the data in the channel .
@@ -22,6 +25,18 @@ class Channel :
         return subWordList
     def __str__(self):
         return self.data  
+    def append(self,char):
+    	self.data = self.data + char
+    	return 0
+    def copy(self):
+		return Channel(self.data,self.alphabet)
+
+    def remove(self):
+    	if len(self.data)>0 :
+	    	char = self.data[0]
+	    	self.data = self.data[1:]
+	    	return char
+		return None
 class SystemState : 
     def __init__(self,controlState,channels):
         self.controlState = controlState # list of processes // maybe we will use dictionary instead of list 
@@ -55,8 +70,9 @@ class SystemState :
             tempData=tempData+'['+str(i)+'],'
         return '<'+tempProc+tempData+'>';
     
-   
-    
+   # helper function for post , returns control state as a lost of integers
+    def controlStateVal(self) : 
+    	return [self.controlState[0].state ,self.controlState[1].state ]
     
     #help function for divideConfs
     def strProcesses(self,conf):
@@ -64,7 +80,8 @@ class SystemState :
         for i in conf.controlState:
             temp=temp+str(i.state)
         return temp
-    
+    def copy(self) :
+    	return SystemState([self.controlState[0].copy(),self.controlState[1].copy()], [self.channels[0].copy(),self.channels[1].copy()])
     #helper function for gama
     def divideConfs(self,confs):
         matchedConfs={}
@@ -106,8 +123,133 @@ class SystemState :
     
                 
     def post(self):
-        
-        return 1; # return a systemState
+    	nextStateList =[]
+    	currState = self
+        if currState.controlStateVal() == [1,1] :
+        	# first possible transiton
+        	nextState1 = self.copy()
+        	nextState1.controlState[0].next()
+        	nextStateList.append(nextState1)
+        	#second possible transition
+        	nextState2 = self.copy()
+        	rec = nextState2.channels[0].remove()
+        	if rec == "0" : 
+        		nextState2.controlState[1].next()
+        	else :
+        		nextState2.channels[1].append("1")
+        	nextStateList.append(nextState2)
+        elif currState.controlStateVal() == [2,1]:
+        	# first possible transiton
+         	nextState1 = self.copy()
+        	rec = nextState1.channels[1].remove()
+        	if rec == "0" : 
+        		nextState1.controlState[0].next()
+        	else :
+        		nextState1.channels[0].append("0")
+        	nextStateList.append(nextState1) 
+        	# second possible transition     
+        	nextState2 = self.copy()
+        	rec = nextState2.channels[0].remove()
+        	if rec == "0" : 
+        		nextState2.controlState[1].next()
+        	else :
+        		nextState2.channels[1].append("1")
+        	nextStateList.append(nextState2)
+        elif currState.controlStateVal() == [2,2] : 
+        	# first possible transiton
+         	nextState1 = self.copy()
+        	rec = nextState1.channels[1].remove()
+        	if rec == "0" : 
+        		nextState1.controlState[0].next()
+        	else :
+        		nextState1.channels[0].append("0")
+        	nextStateList.append(nextState1) 
+        	# second possible transition 
+        	nextState2 = self.copy()
+        	nextState2.controlState[1].next()
+        	nextStateList.append(nextState2)
+        elif currState.controlStateVal() == [2,3] :
+        	# first possible transiton
+         	nextState1 = self.copy()
+        	rec = nextState1.channels[1].remove()
+        	if rec == "0" : 
+        		nextState1.controlState[0].next()
+        	else :
+        		nextState1.channels[0].append("0")
+        	nextStateList.append(nextState1) 
+        	# second possible transition     
+        	nextState2 = self.copy()
+        	rec = nextState2.channels[0].remove()
+        	if rec == "1" : 
+        		nextState2.controlState[1].next()
+        	else :
+        		nextState2.channels[1].append("0")
+        	nextStateList.append(nextState2)
+        elif currState.controlStateVal() == [3,3] :
+        	# first possible transiton
+        	nextState1 = self.copy()
+        	nextState1.controlState[0].next()
+        	nextStateList.append(nextState1)
+        	# second possible transition     
+        	nextState2 = self.copy()
+        	rec = nextState2.channels[0].remove()
+        	if rec == "1" : 
+        		nextState2.controlState[1].next()
+        	else :
+        		nextState2.channels[1].append("0")
+        	nextStateList.append(nextState2)
+        elif currState.controlStateVal() == [4,3] :
+        	# first possible transiton
+         	nextState1 = self.copy()
+        	rec = nextState1.channels[1].remove()
+        	if rec == "1" : 
+        		nextState1.controlState[0].next()
+        	else :
+        		nextState1.channels[0].append("1")
+        	nextStateList.append(nextState1) 
+        	# second possible transition     
+        	nextState2 = self.copy()
+        	rec = nextState2.channels[0].remove()
+        	if rec == "1" : 
+        		nextState2.controlState[1].next()
+        	else :
+        		nextState2.channels[1].append("0")
+        	nextStateList.append(nextState2)
+        elif currState.controlStateVal() == [4,4] :
+        	# first possible transiton
+         	nextState1 = self.copy()
+        	rec = nextState1.channels[1].remove()
+        	if rec == "1" : 
+        		nextState1.controlState[0].next()
+        	else :
+        		nextState1.channels[0].append("1")
+        	nextStateList.append(nextState1)         	
+        	# second possible transition 
+        	nextState2 = self.copy()
+        	nextState2.controlState[1].next()
+        	nextStateList.append(nextState2)
+        elif currState.controlStateVal() == [4,1] :
+        	# first possible transiton
+         	nextState1 = self.copy()
+        	rec = nextState1.channels[1].remove()
+        	if rec == "1" : 
+        		nextState1.controlState[0].next()
+        	else :
+        		nextState1.channels[0].append("1")
+        	nextStateList.append(nextState1) 
+        	#second possible transition
+        	nextState2 = self.copy()
+        	rec = nextState2.channels[0].remove()
+        	if rec == "0" : 
+        		nextState2.controlState[1].next()
+        	else :
+        		nextState2.channels[1].append(1)
+        	nextStateList.append(nextState2)
+
+        return nextStateList
+
+        	
+       
     
     def Apost(self):
         
@@ -117,8 +259,7 @@ class SystemState :
             return True 
 
         return False
-test = SystemState([Process(1,1),Process(2,1)],[Channel("110"),Channel("111")])
-l  = test.alpha(2)
-for i in xrange(0,len(l)):
-	print str(i) + " => "+str(l[i])
-print str(len(l))
+test = SystemState([Process(1,1),Process(2,1)], [Channel(""),Channel("")])
+l = test.post()
+print l[0]
+print l[1]
