@@ -1,3 +1,5 @@
+from bisect import *
+import itertools 
 
 class Process : 
     def __init__(self,ID,state=0):
@@ -30,7 +32,14 @@ class Channel :
         return 0
     def copy(self):
         return Channel(self.data,self.alphabet)
-
+    def __hash__(self):
+        return hash(self.data)
+    def __lt__(self, other):
+        return self.data < other.data
+    @staticmethod
+    def printArray(confs):
+        for i in confs:
+            print(i)    
     def remove(self):
         if len(self.data)>0 :
             char = self.data[0]
@@ -41,7 +50,7 @@ class SystemState :
     def __init__(self,controlState,automata,channels):
         self.controlState = controlState # list of processes // maybe we will use dictionary instead of list 
         self.channels = channels #list contain all channels in the system // maybe we will use dictionary instead of list  
-       	self.automata = automata
+        self.automata = automata
        # self.badStates = [] #list of  string to identify the bad states
 
         
@@ -94,34 +103,96 @@ class SystemState :
             else:
                 matchedConfs[key]=[i];
         return matchedConfs
-    
+    @staticmethod
+    def divideConfs(confs):
+        matchedConfs={}
+        
+        for i in confs:
+            key=i.strProcesses(i)
+            if key in matchedConfs:
+                matchedConfs[key].append(i);
+            else:
+                matchedConfs[key]=[i];
+        return matchedConfs
+    @staticmethod
+    def extractData(i,confs):
+        tempData=[]
+        for j in confs:
+            tempData.append(j.channels[i])
+        return list(set(tempData))
+
     #helper function to return the biggest confs
     def biggestChannel(self,conf):
         
         for i in conf:
             pass   
         return []
-    #helper extract channel data from all confs
-    def extractData(self,i,confs):
-        tempData=[]
-        for j in confs:
-            tempData.append(j.channels[i].data)
-        return tempData
-    
+   
+    @staticmethod
+    def gamaData(conf):
+        gamaConfs=[]
+        gamaConfs.append(Channel(conf.data[0]+conf.data))
+        for i in range(len(conf.data)-1):
+            if conf.data[i]!=conf.data[i+1]:
+                gamaConfs.append(Channel(conf.data[0:i+1]+conf.data[i+1]+conf.data[i+1:len(conf.data)]))
+        return gamaConfs
+
+    @staticmethod
+    def binary_search(a, x, lo=0, hi=None):   # can't use a to specify default for hi
+        hi = hi if hi is not None else len(a) # hi defaults to len(a)   
+        pos = bisect_left(a,x,lo,hi)          # find insertion position
+        return (pos if pos != hi and a[pos] == x else -1) # don't walk off the end
+
     #helper function to find gama for only one channel
-    def gamaChannel(self,k,conf):
-        
-        return []
-    
-    def gama(self, k , confs):
-        matchedConfs=self.divideConfs(confs)
+    @staticmethod
+    def gamaChannel(k,conf):
+        result=[]
+        conf.sort()
+        #Channel.printArray(conf)
+        i=-1
+        if (len(conf[-1].data)==k-1):
+            for j in range(len(conf)):
+                if(len(conf[i].data)==k-1):
+                    i=i-1
+                else:
+                    break
+        gamaChannels=conf[len(conf)+i+1:len(conf)]
+        for j in gamaChannels:
+            temp=SystemState.gamaData(j)
+            #Channel.printArray(temp)
+            for w in temp:
+                Subtemp=w.subWords()
+                Subtemp=Subtemp[:-1]
+                #print(Subtemp)
+                flag=False
+                for c in Subtemp:
+                    tempConf=Channel(c)
+                    #print(SystemState.binary_search(conf, tempConf))
+                    if (SystemState.binary_search(conf, tempConf) != -1):
+                        
+                        flag=True
+                    else:
+                        flag=False
+                #print(flag)
+                if flag:
+                    result.append(w)
+        return result
+
+    @staticmethod
+    def gama(k , confs):
+        matchedConfs=SystemState.divideConfs(confs)
         gamaResult=[]
         for i in matchedConfs.values():
             gamaChannelsResult=[]
-            for j in range(len(i.channels)):
-                gamaChannelsResult.append(self.gamaChannel(k, self.extractData(j, i)))
-        return []
-    
+            for j in range(len(i[0].channels)):
+                channels=SystemState.extractData(j, i);
+                gamaChannelsResult.append(SystemState.gamaChannel(k, channels)+channels);
+            
+            gamaChannelsResult=list(itertools.product(*gamaChannelsResult))
+            
+            for j in gamaChannelsResult:      
+                gamaResult.append(SystemState(i[0].controlState,i[0].automata,list(j)))
+        return gamaResult
                 
     def post(self):
         nextStateList =[]
@@ -173,7 +244,7 @@ class SystemState :
 
        
     def channelsVal(self):
-    	return [self.channels[0].data,self.channels[1].data]
+        return [self.channels[0].data,self.channels[1].data]
     def Apost(self):
         
         return []; # return set of views
@@ -184,23 +255,48 @@ class SystemState :
         return False
 
 def underApproximation(initState,K): # return False if there is an reachable bad state of size K 
-	reachableList = []
-	reachableList.append(initState)
-	i=0
-	while i != len(reachableList):
-		state1,state2 = reachableList[i].post()
-		#print str(reachableList[i]) # + "------" + str(state1) + "------" + str(state2)
-		if len(state1.channels[0].data) <= K and len(state1.channels[1].data) <= K :
-			if state1.automata == 3 : return False
-			if state1 not in reachableList : reachableList.append(state1)
-		if len(state2.channels[0].data) <= K and len(state2.channels[1].data) <= K :
-			if state2.automata == 3 : return False
-			if state2 not in reachableList : reachableList.append(state2)
-		i+=1
-	return True
+    reachableList = []
+    reachableList.append(initState)
+    i=0
+    while i != len(reachableList):
+        state1,state2 = reachableList[i].post()
+        print str(i) +" - "+str(reachableList[i]) # + "------" + str(state1) + "------" + str(state2)
+        if len(state1.channels[0].data) <= K and len(state1.channels[1].data) <= K :
+            if state1.automata == 3 : return False
+            if state1 not in reachableList : reachableList.append(state1)
+        if len(state2.channels[0].data) <= K and len(state2.channels[1].data) <= K :
+            if state2.automata == 3 : return False
+            if state2 not in reachableList : reachableList.append(state2)
+        i+=1
+    print len(reachableList)
+    return True
 
+
+#test gamachannel
+a=[Channel('0'),Channel('1'),Channel('10'),Channel('11'),Channel('110')]
+a.sort()
+print(Channel.printArray(SystemState.gamaChannel(3, a)))
+
+#test alpha
+print "test alpha ----------------------- "
+
+test = SystemState([Process(1,1),Process(2,1)],1,[Channel("110"),Channel("111")])
+l  = test.alpha(2)
+for i in xrange(0,len(l)):
+    print str(i) + " => "+str(l[i])
+print str(len(l))
+
+#test gama
+print "test gama ----------------------- "
+g=SystemState.gama(3, l)
+# print g
+for i in xrange(0,len(g)):
+    print str(i) + " => "+str(g[i])
+print str(len(g))
+
+#test underapproximation
+print "test underapproximation ----------------------- "
 
 test = SystemState([Process(1,1),Process(1,1)],1, [Channel(""),Channel("")])
 test2 = SystemState([Process(1,2),Process(1,1)],1, [Channel(""),Channel("")])
-#print test==test2
 print underApproximation(test, 2)
