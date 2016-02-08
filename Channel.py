@@ -26,7 +26,9 @@ class Channel :
     @staticmethod
     def printArray(confs):
         for i in confs:
-            print(i)    
+            print(i)
+    def __eq__(self,other):
+        return self.data==other.data
     def remove(self):
         if len(self.data)>0 :
             char = self.data[0]

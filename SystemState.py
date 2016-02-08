@@ -49,16 +49,6 @@ class SystemState :
     def copy(self) :
         return SystemState([self.controlState[0].copy(),self.controlState[1].copy()], self.automata,[self.channels[0].copy(),self.channels[1].copy()])
     #helper function for gama
-    def divideConfs(self,confs):
-        matchedConfs={}
-        
-        for i in confs:
-            key=self.strProcesses(i)
-            if key in matchedConfs:
-                matchedConfs[key].append(i);
-            else:
-                matchedConfs[key]=[i];
-        return matchedConfs
     @staticmethod
     def divideConfs(confs):
         matchedConfs={}
@@ -106,16 +96,15 @@ class SystemState :
         conf.sort()
         #Channel.printArray(conf)
         i=-1
-        if (len(conf[-1].data)==k-1):
-            for j in range(len(conf)):
-                if(len(conf[i].data)==k-1):
-                    i=i-1
-                else:
-                    break
+        for j in range(len(conf)):
+            if(len(conf[i].data)==k-1):
+                i=i-1
+            else:
+                break
         gamaChannels=conf[len(conf)+i+1:len(conf)]
         for j in gamaChannels:
             temp=SystemState.gamaData(j)
-            #Channel.printArray(temp)
+            Channel.printArray(temp)
             for w in temp:
                 Subtemp=w.subWords()
                 Subtemp=Subtemp[:-1]
@@ -142,12 +131,24 @@ class SystemState :
             gamaChannelsResult=[]
             for j in range(len(i[0].channels)):
                 channels=SystemState.extractData(j, i);
-                gamaChannelsResult.append(SystemState.gamaChannel(k, channels)+channels);
+#                 print ("---------"+str(j)+"-------------")
+#                 print (Channel.printArray(channels));
+#                 print ("----------------------")
+                gamaChannelsResult.append([SystemState.gamaChannel(k, channels),channels])
+                
+            gamaChannelsResultCompined=[]
+            for j in range(len(gamaChannelsResult)):
+                temp=[]
+                for w in range(len(gamaChannelsResult)):
+                    if w == j:
+                        temp.append(gamaChannelsResult[w][0])
+                    else:
+                        temp.append(gamaChannelsResult[w][1])
+                gamaChannelsResultCompined=gamaChannelsResultCompined+(list(itertools.product(*temp)))
             
-            gamaChannelsResult=list(itertools.product(*gamaChannelsResult))
-            
-            for j in gamaChannelsResult:      
+            for j in gamaChannelsResultCompined:      
                 gamaResult.append(SystemState(i[0].controlState,i[0].automata,list(j)))
+        gamaResult=gamaResult+confs
         return gamaResult
                 
     def post(self):

@@ -21,8 +21,7 @@ def underApproximation(initState,K): # return False if there is an reachable bad
 
 #test gamachannel
 a=[Channel('0'),Channel('1'),Channel('10'),Channel('11'),Channel('110')]
-a.sort()
-print(Channel.printArray(SystemState.gamaChannel(3, a)))
+print(Channel.printArray(SystemState.gamaChannel(4, a)))
 
 #test alpha
 print "test alpha ----------------------- "
