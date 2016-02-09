@@ -134,7 +134,8 @@ class SystemState :
 #                 print ("---------"+str(j)+"-------------")
 #                 print (Channel.printArray(channels));
 #                 print ("----------------------")
-                gamaChannelsResult.append([SystemState.gamaChannel(k, channels),channels])
+                temp=SystemState.gamaChannel(k, channels);
+                gamaChannelsResult.append([temp,temp+channels])
                 
             gamaChannelsResultCompined=[]
             for j in range(len(gamaChannelsResult)):
