@@ -104,7 +104,7 @@ class SystemState :
         gamaChannels=conf[len(conf)+i+1:len(conf)]
         for j in gamaChannels:
             temp=SystemState.gamaData(j)
-            Channel.printArray(temp)
+            # Channel.printArray(temp)
             for w in temp:
                 Subtemp=w.subWords()
                 Subtemp=Subtemp[:-1]
@@ -203,9 +203,18 @@ class SystemState :
        
     def channelsVal(self):
         return [self.channels[0].data,self.channels[1].data]
-    def Apost(self):
-        
-        return []; # return set of views
+    @staticmethod
+    def Apost(K,X):
+        V = X
+        C = SystemState.gama(K,X)
+        for c in C :
+            state1,state2 = c.post()
+            for s in state1.alpha(K):
+                if s not in V : V.append(s)
+            for s in state2.alpha(K):
+                if s not in V : V.append(s)            
+        return V
+         
     def __eq__(self,other):
         if self.controlStateVal()==other.controlStateVal() and self.channelsVal()==other.channelsVal() and self.automata==other.automata :
             return True 

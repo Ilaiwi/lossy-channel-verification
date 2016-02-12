@@ -18,9 +18,23 @@ def underApproximation(initState,K): # return False if there is an reachable bad
     print len(reachableList)
     return True
 
+def overAproximation(initState,K):
+    V = initState.alpha(K)
+    len1 = len(V)
+    V = SystemState.Apost(K,V)
+    len2 = len(V)
+    while len2!=len1:
+        len1 = len(V)
+        V = SystemState.Apost(K,V)
+        len2 = len(V)
+    for x in V:
+        if x.automata == 3 :
+            return False
+    return True
+
 
 #test gamachannel
-a=[Channel('0'),Channel('1'),Channel('10'),Channel('11'),Channel('110')]
+a = [Channel('0'),Channel('1'),Channel('10'),Channel('11'),Channel('110')]
 print(Channel.printArray(SystemState.gamaChannel(4, a)))
 
 #test alpha
@@ -28,21 +42,29 @@ print "test alpha ----------------------- "
 
 test = SystemState([Process(1,1),Process(2,1)],1,[Channel("110"),Channel("111")])
 l  = test.alpha(2)
-for i in xrange(0,len(l)):
-    print str(i) + " => "+str(l[i])
-print str(len(l))
+for x in l:
+    print str(x)
+print "===================="
+V = test.Apost(2,l)
+for x in V :
+    print str(x)
+print overAproximation(test,1)
+# for i in xrange(0,len(l)):
+#     print str(i) + " => "+str(l[i])
+# print str(len(l))
 
 #test gama
-print "test gama ----------------------- "
-g=SystemState.gama(3, l)
-# print g
-for i in xrange(0,len(g)):
-    print str(i) + " => "+str(g[i])
-print str(len(g))
+# print "test gama ----------------------- "
+# g=SystemState.gama(3, l)
+# # print g
+# for i in xrange(0,len(g)):
+#     print str(i) + " => "+str(g[i])
+# print str(len(g))
 
-#test underapproximation
-print "test underapproximation ----------------------- "
+# #test underapproximation
+# print "test underapproximation ----------------------- "
 
-test = SystemState([Process(1,1),Process(1,1)],1, [Channel(""),Channel("")])
-test2 = SystemState([Process(1,2),Process(1,1)],1, [Channel(""),Channel("")])
-print underApproximation(test, 2)
+# test = SystemState([Process(1,1),Process(1,1)],1, [Channel(""),Channel("")])
+# test2 = SystemState([Process(1,2),Process(1,1)],1, [Channel(""),Channel("")])
+# # print underApproximation(test, 2)
+
