@@ -7,7 +7,6 @@ def underApproximation(initState,K): # return False if there is an reachable bad
     i=0
     while i != len(reachableList):
         state1,state2 = reachableList[i].post()
-        print str(i) +" - "+str(reachableList[i]) # + "------" + str(state1) + "------" + str(state2)
         if len(state1.channels[0].data) <= K and len(state1.channels[1].data) <= K :
             if state1.automata == 3 : return False
             if state1 not in reachableList : reachableList.append(state1)
@@ -15,10 +14,9 @@ def underApproximation(initState,K): # return False if there is an reachable bad
             if state2.automata == 3 : return False
             if state2 not in reachableList : reachableList.append(state2)
         i+=1
-    print len(reachableList)
     return True
 
-def overAproximation(initState,K):
+def overAproximation(initState,K) :
     V = initState.alpha(K)
     len1 = len(V)
     V = SystemState.Apost(K,V)
@@ -33,22 +31,32 @@ def overAproximation(initState,K):
     return True
 
 
+K=1
+initState = SystemState([Process(1,1),Process(2,1)],1,[Channel(""),Channel("")])
+while  True :
+    if not underApproximation(initState,K):
+        print "there is an bad state" , str(K)
+        exit()
+    if overAproximation(initState,K) :
+        print "The system is verified" , str(K)
+        exit()
+
 #test gamachannel
-a = [Channel('0'),Channel('1'),Channel('10'),Channel('11'),Channel('110')]
-print(Channel.printArray(SystemState.gamaChannel(4, a)))
+# a = [Channel('0'),Channel('1'),Channel('10'),Channel('11'),Channel('110')]
+# print(Channel.printArray(SystemState.gamaChannel(4, a)))
 
-#test alpha
-print "test alpha ----------------------- "
+# #test alpha
+# print "test alpha ----------------------- "
 
-test = SystemState([Process(1,1),Process(2,1)],1,[Channel("110"),Channel("111")])
-l  = test.alpha(2)
-for x in l:
-    print str(x)
-print "===================="
-V = test.Apost(2,l)
-for x in V :
-    print str(x)
-print overAproximation(test,1)
+# test = SystemState([Process(1,1),Process(2,1)],1,[Channel("110"),Channel("111")])
+# l  = test.alpha(2)
+# for x in l:
+#     print str(x)
+# print "===================="
+# V = test.Apost(2,l)
+# for x in V :
+#     print str(x)
+# print overAproximation(test,1)
 # for i in xrange(0,len(l)):
 #     print str(i) + " => "+str(l[i])
 # print str(len(l))
