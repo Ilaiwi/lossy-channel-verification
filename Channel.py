@@ -4,7 +4,7 @@ class Channel :
         self.alphabet=[] # list of alphabet allowed in the channels
         self.processes = [] # list contains ID of processes that can access the channel .// maybe we will use dictionary instead of list
     def subWords(self,length=None) :
-        subWordList =[]
+        subWordList =[""]
         data = self.data
         channelLength = len(data)
         if length== None : length=channelLength
