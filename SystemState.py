@@ -77,10 +77,16 @@ class SystemState :
     @staticmethod
     def gamaData(conf):
         gamaConfs=[]
-        gamaConfs.append(Channel(conf.data[0]+conf.data))
-        for i in range(len(conf.data)-1):
-            if conf.data[i]!=conf.data[i+1]:
-                gamaConfs.append(Channel(conf.data[0:i+1]+conf.data[i+1]+conf.data[i+1:len(conf.data)]))
+        if len(conf.data)>0:
+            
+            gamaConfs.append(Channel(conf.data[0]+conf.data))
+            for i in range(len(conf.data)-1):
+                if conf.data[i]!=conf.data[i+1]:
+                    gamaConfs.append(Channel(conf.data[0:i+1]+conf.data[i+1]+conf.data[i+1:len(conf.data)]))
+        else:
+        
+            for i in conf.alphabet:
+                gamaConfs.append(Channel(i))
         return gamaConfs
 
     @staticmethod
@@ -101,10 +107,12 @@ class SystemState :
                 i=i-1
             else:
                 break
+        
         gamaChannels=conf[len(conf)+i+1:len(conf)]
+        
         for j in gamaChannels:
             temp=SystemState.gamaData(j)
-            # Channel.printArray(temp)
+#             Channel.printArray(temp)
             for w in temp:
                 Subtemp=w.subWords()
                 Subtemp=Subtemp[:-1]

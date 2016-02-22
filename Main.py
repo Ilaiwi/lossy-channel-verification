@@ -52,7 +52,7 @@ def overAproximation(initState,K) :
 
 test = SystemState([Process(1,1),Process(2,1)],1,[Channel("111"),Channel("")])
 l  = test.alpha(1)
-print l
+
 # for x in l:
 #     print str(x)
 # print "===================="

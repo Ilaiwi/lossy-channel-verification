@@ -1,7 +1,7 @@
 class Channel : 
-    def __init__(self,data="",alphabet=[1,0]):
+    def __init__(self,data="",alphabet=['1','0']):
         self.data = data  # string contains the data in the channel .
-        self.alphabet=[] # list of alphabet allowed in the channels
+        self.alphabet=alphabet # list of alphabet allowed in the channels
         self.processes = [] # list contains ID of processes that can access the channel .// maybe we will use dictionary instead of list
     def subWords(self,length=None) :
         subWordList =[""]
