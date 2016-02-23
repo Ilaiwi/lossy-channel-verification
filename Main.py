@@ -14,11 +14,12 @@ def underApproximation(initState,K): # return False if there is an reachable bad
             if state2.automata == 3 : return False
             if state2 not in reachableList : reachableList.append(state2)
         i+=1
+    print "Under Approximation with K = " +str(K) + " : "
+    print "reachable states = "+str(len(reachableList))
     return True
-
+ 
 def overAproximation(initState,K) :
     V = initState.alpha(K)
-    print str(V)
     len1 = len(V)
     V = SystemState.Apost(K,V)
     len2 = len(V)
@@ -26,22 +27,28 @@ def overAproximation(initState,K) :
         len1 = len(V)
         V = SystemState.Apost(K,V)
         len2 = len(V)
+    print "Over Aproximation with K = " + str(K)
+    print "number of views in V = "+ str(len(V))
     for x in V:
         if x.automata == 3 :
+            print "there is a bad state in V"
             return False
-    print len(V)
+
+
     return True
 
 
-# K=1
-# initState = SystemState([Process(1,1),Process(2,1)],1,[Channel(""),Channel("")])
-# while  True :
-#     if not underApproximation(initState,K):
-#         print "there is an bad state" , str(K)
-#         exit()
-#     if overAproximation(initState,K) :
-#         print "The system is verified" , str(K)
-#         exit()
+K=1
+initState = SystemState([Process(1,1),Process(2,1)],1,[Channel(""),Channel("")])
+while  True :
+    if not underApproximation(initState,K):
+        print "there is an bad state at K = " , str(K)
+        exit() 
+    if overAproximation(initState,K) :
+        print "The system is verified at K = " , str(K)
+        exit()
+    print "===================================="
+    K+=1
 
 # test gamachannel
 # a = [Channel('0'),Channel('1'),Channel('10'),Channel('11'),Channel('110')]
@@ -50,8 +57,8 @@ def overAproximation(initState,K) :
 # #test alpha
 # print "test alpha ----------------------- "
 
-test = SystemState([Process(1,1),Process(2,1)],1,[Channel("111"),Channel("")])
-l  = test.alpha(1)
+# test = SystemState([Process(1,1),Process(2,1)],1,[Channel("111"),Channel("")])
+# l  = test.alpha(1)
 
 # for x in l:
 #     print str(x)
@@ -65,17 +72,17 @@ l  = test.alpha(1)
 # print str(len(l))
 
 #test gama
-print "test gama ----------------------- "
-g=SystemState.gama(1, l)
+# print "test gama ----------------------- "
+# g=SystemState.gama(2, l)
 # print g
-for i in xrange(0,len(g)):
-    print str(i) + " => "+str(g[i])
-print str(len(g))
+# for i in xrange(0,len(g)):
+#     print str(i) + " => "+str(g[i])
+# print str(len(g))
 
 #test underapproximation
-print "test underapproximation ----------------------- "
+# print "test underapproximation ----------------------- "
 
-test = SystemState([Process(1,1),Process(1,1)],1, [Channel(""),Channel("")])
-test2 = SystemState([Process(1,2),Process(1,1)],1, [Channel(""),Channel("")])
+# test = SystemState([Process(1,1),Process(1,1)],1, [Channel(""),Channel("")])
+# test2 = SystemState([Process(1,2),Process(1,1)],1, [Channel(""),Channel("")])
 # print underApproximation(test, 2)
 
